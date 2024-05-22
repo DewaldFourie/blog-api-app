@@ -19,7 +19,16 @@ const commentSchema = new mongoose.Schema(
             required: true,
         },
         likes: {
-            type: Number
+            type: Number,
+            min: 0,
+            default: 0,
         },
+    },
+    {
+        timestamps: true
     }
-)
+);
+
+const Comment = mongoose.model('Comment', commentSchema);
+
+export default Comment;

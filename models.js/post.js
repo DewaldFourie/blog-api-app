@@ -20,6 +20,8 @@ const postSchema = new mongoose.Schema(
         },
         likes: {
             type: Number,
+            min: 0,
+            default: 0,
         },
         published: {
             type: Boolean,
@@ -28,3 +30,7 @@ const postSchema = new mongoose.Schema(
     }, 
     { timestamps: true },
 )
+
+const Post = mongoose.model('Post', postSchema);
+
+export default Post;
