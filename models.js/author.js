@@ -13,7 +13,9 @@ const authorSchema = new mongoose.Schema(
             required: true,
         }
     },
-    {timestamps: true},
+    {
+        timestamps: true
+    },
 );
 
 const Author = mongoose.model('Author', authorSchema);
