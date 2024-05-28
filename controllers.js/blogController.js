@@ -55,7 +55,7 @@ exports.get_post = asyncHandler(async (req, res, next) => {
     // checks to see if there is a postID and if the postID is a valid MongoDB Object
     if (!req.params.postid || !isValidObjectId(req.params.postid)) {
         // if not send error
-        res.send(400);
+        res.sendStatus(400);
     } else {
         // fetch the post and its related comments
         const [post, comments] = [
@@ -106,7 +106,6 @@ exports.post_comment = asyncHandler(async (req, res, next) => {
                     post: req.params.postid,
                     likes: 0,
                 });
-
                 // save the new comment to the DB and respond with a json result
                 await comment.save();
                 res.json({ result: 'done' });
