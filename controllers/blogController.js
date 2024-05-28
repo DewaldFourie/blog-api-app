@@ -1,6 +1,6 @@
 const { isValidObjectId } = require('mongoose');
-const Post = require('../models.js/post');
-const Comment = require('../models.js/comment');
+const Post = require('../models/post');
+const Comment = require('../models/comment');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 

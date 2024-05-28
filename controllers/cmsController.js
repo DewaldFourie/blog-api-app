@@ -1,6 +1,6 @@
-const Author = require('../models.js/author');
-const Post = require('../models.js/post');
-const comment = require('../models.js/comment');
+const Author = require('../models/author');
+const Post = require('../models/post');
+const comment = require('../models/comment');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { isValidObjectId } = require('mongoose');
