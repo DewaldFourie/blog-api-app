@@ -92,7 +92,7 @@ exports.create_post = asyncHandler(async (req, res, next) => {
 });
 
 
-// controller to Update a post in the DB
+// controller to UPDATE a post in the DB
 exports.update_post = asyncHandler(async (req, res, next) => {
     // check and validate the query args presence
     if (!req.params.postid || !isValidObjectId(req.params.postid) || !req.body.title || !req.body.text) {
@@ -113,3 +113,49 @@ exports.update_post = asyncHandler(async (req, res, next) => {
         }
     }
 });
+
+
+// controller to DELETE a post in the DB
+exports.delete_post = asyncHandler(async (req, res, next) => {
+    // checks to see if there is a postID and if the postID is a valid MongoDB Object
+    if (!req.params.postid || !isValidObjectId(req.params.postid)) {
+        // if not send error
+        res.sendStatus(400);
+    } else {
+        // check if the post exists
+        const post = await Post.findById(req.params.postid).exec();
+        if (!post) {
+            //if the post does not exists in the DB, send not found error
+            res.sendStatus(404);
+        } else {
+            // posts exists and is valid, delete post accordingly
+            await post.findByIdAndDelete(req.params.postid).exec();
+            res.json({ result: 'done' });
+        }
+    }
+});
+
+
+// controller to DELETE a comment of a post
+exports.delete_comment = asyncHandler(async (req, res, next) => {
+    // checks to see if there is a postID & commentID and if the postID & commentID is valid MongoDB Objects
+    if (!req.params.postid || !isValidObjectId(req.params.postid) || !req.params.commentid || !isValidObjectId(req.params.commentid)) {
+        // if not send error
+        res.sendStatus(400);
+    } else {
+        // check if the post and related comment exist
+        const [post, comment] = [
+            await Post.findById(req.params.postid).exec(),
+            await Comment.findById(req.params.commentid).exec(),
+        ];
+        if (!post || !comment) {
+            // if no post or no related comment exist, send not found error
+            res.sendStatus(404);
+        } else {
+            // comment and post exits, delete the related comment
+            await Comment.findByIdAndDelete(req.params.commentid).exec();
+            res.json({ result: 'done' });
+        }
+    }
+});
+
