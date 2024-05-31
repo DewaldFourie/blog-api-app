@@ -1,5 +1,5 @@
 let express = require('express');
-let router = express.router();
+let router = express.Router();
 const jwt = require('jsonwebtoken');
 const cmsController = require('../controllers/cmsController');
 
@@ -9,4 +9,3 @@ router.post('/logout')
 
 
 // routes for getting posts           // NB NEED TO ADD AUTH MIDDLEWARE 
-router.get('/posts', /*authMiddle*/ cmsController.ge)

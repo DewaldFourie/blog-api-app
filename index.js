@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.use('/cms', cmsRouter);
+//app.use('/cms', cmsRouter);
 app.use('/posts', blogRouter);
 
 app.listen(port, () => {
