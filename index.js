@@ -4,6 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const blogRouter = require('./routes/blogRoutes');
+const cmsRouter = require('./routes/cmsRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,10 +15,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.get("/", (req, res) => {
-    res.send("Welcome to the express server!");
-});
-
+app.use('/cms', cmsRouter);
+app.use('/posts', blogRouter);
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
