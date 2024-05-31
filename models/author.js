@@ -8,7 +8,11 @@ const authorSchema = new mongoose.Schema(
             unique: true,
             required: true,
         },
-        password: {
+        hash: {
+            type: String,
+            required: true,
+        },
+        salt: {
             type: String,
             required: true,
         }

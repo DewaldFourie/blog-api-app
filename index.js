@@ -10,12 +10,21 @@ const cmsRouter = require('./routes/cmsRoutes');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// DB setup
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
+const mongoDB = process.env.MONGODB_URI;
+main().catch((err) => console.log(err));
+async function main() {
+    await mongoose.connect(mongoDB);
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
 
-//app.use('/cms', cmsRouter);
+app.use('/cms', cmsRouter);
 app.use('/posts', blogRouter);
 
 app.listen(port, () => {

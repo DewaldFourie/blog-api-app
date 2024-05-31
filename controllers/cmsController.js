@@ -4,6 +4,8 @@ const comment = require('../models/comment');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { isValidObjectId } = require('mongoose');
+const { request } = require('express');
+const genPassword = require('../lib/passwordUtils').genPassword;
 
 
 // controller to GET all posts list from the DB
@@ -159,3 +161,21 @@ exports.delete_comment = asyncHandler(async (req, res, next) => {
     }
 });
 
+// controller to create a new author
+exports.create_author = asyncHandler(async (req, res, next) => {
+
+    const saltHash = genPassword(req.body.password);
+
+    const salt = saltHash.salt;
+    const hash = saltHash.hash;
+
+    const newAuthor = new Author({
+        username: req.body.username,
+        salt: salt,
+        hash: hash,
+    });
+    
+    await newAuthor.save();
+    res.json({ result: 'done'});
+
+})
