@@ -14,7 +14,7 @@ const { json } = require('body-parser');
 exports.login = asyncHandler(async (req, res, next) => {
     // check to see if the query args are present
     if (!req.body.username || !req.body.password) {
-        // if not, send error
+        // if not, send error Bad Request
         res.sendStatus(400);
     } else {
         // check to see if an author with that username exists
@@ -29,7 +29,7 @@ exports.login = asyncHandler(async (req, res, next) => {
                 // if the passwords don't match, send unauthorized error
                 res.sendStatus(401);
             } else {
-                // passwords is a match, send back the JWT token with httpOnly
+                // passwords is a match, send back the JWT token with httpOnly    NB= CAN ADJUST TIME LIMIT AS NEEDED
                 const expirationDate = dayjs().add(10, "minutes").toDate(); // if updated, the expires in value below must be updated
                 jwt.sign({ author }, process.env.SECRET, { expiresIn: "10m" }, (err, token) => {
                     res.cookie("token", JSON.stringify({ token: token }), {
@@ -37,7 +37,6 @@ exports.login = asyncHandler(async (req, res, next) => {
                         expires: expirationDate,
                         sameSite: "none",
                     });
-
                     res.json({ result: "logged in", token: expirationDate });
                 });
             }
@@ -48,12 +47,14 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 // controller to handle POST route for author logout
 exports.logout = asyncHandler(async (req, res, next) => {
+    // Setting a cookie with a token value of 'none' and an expiration
+    // date of '5s' effectively invalidating the token
     const expirationDate = dayjs().add(5, "seconds").toDate();
     res.cookie("token", JSON.stringify({ token: "none" }), {
         httpOnly: true,
         expires: expirationDate,
     });
-
+    // response message to confirm logout
     res.json({ result: "logged out", token: expirationDate });
 });
 
@@ -214,18 +215,25 @@ exports.delete_comment = asyncHandler(async (req, res, next) => {
 // controller to create a new author
 exports.create_author = asyncHandler(async (req, res, next) => {
 
-    const saltHash = genPassword(req.body.password);
-
-    const salt = saltHash.salt;
-    const hash = saltHash.hash;
-
-    const newAuthor = new Author({
-        username: req.body.username,
-        salt: salt,
-        hash: hash,
-    });
-    
-    await newAuthor.save();
-    res.json({ result: 'done'});
-
-})
+    // check if the username already exists
+    const existingAuthor = await Author.findOne({ username: req.body.username }).exec();
+    if (existingAuthor) {
+        // if the username already exists, send a conflict error
+        return res.sendStatus(409).json({ error: 'Username already exists' });
+    } else {
+        // generate a password with the genPassword function using the req body password data
+        const saltHash = genPassword(req.body.password);
+        // extract the salt and hash values to be saved with the newAuthor object
+        const salt = saltHash.salt;
+        const hash = saltHash.hash;
+        // create a new Author instance with req body username data
+        const newAuthor = new Author({
+            username: req.body.username,
+            salt: salt,
+            hash: hash,
+        });
+        // save the new Author instance in the DB
+        await newAuthor.save();
+        res.json({ result: 'done'});
+    }
+});
