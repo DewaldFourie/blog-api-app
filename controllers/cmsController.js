@@ -1,11 +1,61 @@
 const Author = require('../models/author');
 const Post = require('../models/post');
-const comment = require('../models/comment');
+const Comment = require('../models/comment');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { isValidObjectId } = require('mongoose');
-const { request } = require('express');
 const genPassword = require('../lib/passwordUtils').genPassword;
+const validPassword = require('../lib/passwordUtils').validPassword;
+const dayjs = require('dayjs');
+const { json } = require('body-parser');
+
+
+// controller to handle POST route for author login
+exports.login = asyncHandler(async (req, res, next) => {
+    // check to see if the query args are present
+    if (!req.body.username || !req.body.password) {
+        // if not, send error
+        res.sendStatus(400);
+    } else {
+        // check to see if an author with that username exists
+        const author = await Author.findOne({ username: req.body.username }).exec();
+        if (!author) {
+            // if there is no author with that username, send not found error
+            res.sendStatus(404);
+        } else {
+            // check if the passwords match using passwordUtils
+            const match = validPassword(req.body.password, author.hash, author.salt);
+            if (!match) {
+                // if the passwords don't match, send unauthorized error
+                res.sendStatus(401);
+            } else {
+                // passwords is a match, send back the JWT token with httpOnly
+                const expirationDate = dayjs().add(10, "minutes").toDate(); // if updated, the expires in value below must be updated
+                jwt.sign({ author }, process.env.SECRET, { expiresIn: "10m" }, (err, token) => {
+                    res.cookie("token", JSON.stringify({ token: token }), {
+                        httpOnly: true,
+                        expires: expirationDate,
+                        sameSite: "none",
+                    });
+
+                    res.json({ result: "logged in", token: expirationDate });
+                });
+            }
+        }
+    }
+});
+
+
+// controller to handle POST route for author logout
+exports.logout = asyncHandler(async (req, res, next) => {
+    const expirationDate = dayjs().add(5, "seconds").toDate();
+    res.cookie("token", JSON.stringify({ token: "none" }), {
+        httpOnly: true,
+        expires: expirationDate,
+    });
+
+    res.json({ result: "logged out", token: expirationDate });
+});
 
 
 // controller to GET all posts list from the DB
@@ -84,7 +134,7 @@ exports.create_post = asyncHandler(async (req, res, next) => {
         const newPost = new Post({
             title: req.body.title,
             text: req.body.text,
-            author: req.authData.user._id, // Get the User's ID from the token
+            author: req.authData.author._id, // Get the Author's ID from the token
             likes: 0,
             published: false,
         });

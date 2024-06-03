@@ -3,6 +3,7 @@ dotenv.config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const blogRouter = require('./routes/blogRoutes');
 const cmsRouter = require('./routes/cmsRoutes');
@@ -22,6 +23,8 @@ async function main() {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
 
 
 app.use('/cms', cmsRouter);
