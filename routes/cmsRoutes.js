@@ -4,21 +4,29 @@ const jwt = require('jsonwebtoken');
 const cmsController = require('../controllers/cmsController');
 const { json } = require('body-parser');
 
+
 // routes for admin login and logout
 router.post('/login', cmsController.login);                
 router.post('/logout', verifyToken, cmsController.logout);
 
-// Route for creating a new author
+// Route to CREATE a new author
 router.post('/new_author', cmsController.create_author);
 
-
-// routes for getting posts         
+// routes to GET posts         
 router.get('/posts', verifyToken, cmsController.get_posts_list);
 router.get('/posts/:postid', verifyToken, cmsController.get_post);
 
-// routes for handling a post
-router.post('/posts',verifyToken, cmsController.create_post);
+// routes to UPDATE posts
+router.put('/posts/:postid/publish', verifyToken, handlePublish, cmsController.publish_post);
+router.put('/posts/:postid/unpublish', verifyToken, handleUnpublish, cmsController.publish_post);
 
+// routes to CREATE, UPDATED and DELETE a post
+router.post('/posts', verifyToken, cmsController.create_post);
+router.put('/posts/:postid', verifyToken, cmsController.update_post);
+router.delete('/posts/:postid', verifyToken, cmsController.delete_post);
+
+// route to DELETE a comment on a post
+router.post('posts/postid/comment/:commentid', verifyToken, cmsController.delete_comment);
 
 
 // Function to verify the jwt token of the author using Cookies  
@@ -50,6 +58,19 @@ function verifyToken(req, res, next) {
     }
 }
 
+// function to update post to Unpublished
+function handleUnpublish(req, res, next) {
+    // set the req parameter 'publish' to false 
+    req.publish = false;
+    next();
+};
+
+// function to update post to Published
+function handlePublish(req, res, next) {
+    // set the req parameter 'publish' to true 
+    req.publish = true;
+    next();
+};
 
 
 module.exports = router;
