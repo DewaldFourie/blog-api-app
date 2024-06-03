@@ -26,7 +26,7 @@ router.put('/posts/:postid', verifyToken, cmsController.update_post);
 router.delete('/posts/:postid', verifyToken, cmsController.delete_post);
 
 // route to DELETE a comment on a post
-router.post('posts/postid/comment/:commentid', verifyToken, cmsController.delete_comment);
+router.delete('/posts/:postid/comment/:commentid', verifyToken, cmsController.delete_comment);
 
 
 // Function to verify the jwt token of the author using Cookies  

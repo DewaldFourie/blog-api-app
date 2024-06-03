@@ -8,6 +8,6 @@ router.get('/last/:number', blogController.get_last_post_list);
 
 router.get('/:postid', blogController.get_post);
 
-router.get('/:postid/comment', blogController.post_comment);
+router.post('/:postid/comment', blogController.post_comment);
 
 module.exports = router;

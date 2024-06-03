@@ -182,7 +182,7 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
             res.sendStatus(404);
         } else {
             // posts exists and is valid, delete post accordingly
-            await post.findByIdAndDelete(req.params.postid).exec();
+            await Post.findByIdAndDelete(req.params.postid).exec();
             res.json({ result: 'done' });
         }
     }
