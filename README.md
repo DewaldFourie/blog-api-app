@@ -1,1 +1,1 @@
-This is a personal blog application build with REST API structures in Express Node.js using passport and JWT-Authentication. The Front-end is constructed using React and vanilla CSS
+This is a personal blog API application build with REST API structures in Express Node.js using passport and JWT-Authentication. 
