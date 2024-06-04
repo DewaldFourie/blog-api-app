@@ -33,4 +33,10 @@ const postSchema = new mongoose.Schema(
     },
 )
 
+// Extending the Schema with a hook to implement cascade deleting for all 
+// comments associated with the post if a post is deleted
+postSchema.pre('remove', function(next) {
+    this.model('Comment').deleteMany({ post: this._id }, next)
+});
+
 module.exports = mongoose.model('Post', postSchema);
