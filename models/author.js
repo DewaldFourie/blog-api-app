@@ -24,7 +24,7 @@ const authorSchema = new mongoose.Schema(
 
 // Extending the Schema with a hook to implement cascade deleting for all 
 // posts associated with the author if a author is deleted
-postSchema.pre('remove', function(next) {
+authorSchema.pre('remove', function(next) {
     this.model('Post').deleteMany({ author: this._id }, next)
 });
 
