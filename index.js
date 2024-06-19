@@ -10,7 +10,7 @@ const cmsRouter = require('./routes/cmsRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const HOST = process.env.HOST
+
 
 // DB setup
 const mongoose = require('mongoose');
@@ -31,6 +31,6 @@ app.use(cookieParser());
 app.use('/cms', cmsRouter);
 app.use('/posts', blogRouter);
 
-app.listen(port, HOST, () => {
-    console.log(`Server started on port http:${HOST}:${port}`);
+app.listen(port, () => {
+    console.log(`Server started on port: ${port}`);
 });
