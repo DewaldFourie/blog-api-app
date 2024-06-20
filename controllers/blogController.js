@@ -121,31 +121,31 @@ exports.post_like = asyncHandler(async (req, res, next) => {
     // check to  see if there is a postID and if the postID is valid
     if (!req.params.postid || !isValidObjectId(req.params.postid)) {
         // if not, send error
-        res.sendStatus(400);
+        return res.status(400).json({ message: 'invalid post ID' });
     } else {
         // set the userID from the headers
         const userId = req.headers['x-user-id'];
         // check to see if there is a userID
         if (!userId) {
             // if not , send error
-            res.sendStatus(400).json({message: 'User ID is required'});
+            return res.status(400).json({message: 'User ID is required'});
         } else {
             const post = await Post.findById(req.params.postid).exec()
             // check if the post exists and is published
             if (!post) {
                 // if not, send not found error
-                res.sendStatus(404);
+                return res.status(404).json({ message: 'Post not found' });
             } else {
                 // if there is a post, check to see if it is published or not
                 if (!post.published) {
                     //if not, send forbidden error
-                    res.sendStatus(403);
+                    return res.status(403).json({ message: 'Post not published' });
                 } else {
                     // post is published, check if the user has already liked the post
                     const existingLike = await Like.findOne({ userId, postId: req.params.postid }).exec();
                     if (existingLike) {
                         // user has already liked the post, send error
-                        res.sendStatus(400).json({ message: 'User has already liked this post' })
+                        return res.status(400).json({ message: 'User has already liked this post' });
                     } else {
                         // user has not yet liked this post
                         // Increment the post's like count and save to DB
