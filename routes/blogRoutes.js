@@ -10,4 +10,8 @@ router.get('/:postid', blogController.get_post);
 // Router to POST a comment on a post
 router.post('/:postid/comment', blogController.post_comment);
 
+// Router to POST a like on a post
+router.post('/:postid/like', blogController.post_like)
+
+
 module.exports = router;

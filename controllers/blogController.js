@@ -1,6 +1,7 @@
 const { isValidObjectId } = require('mongoose');
 const Post = require('../models/post');
 const Comment = require('../models/comment');
+const Like = require('../models/like');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 
@@ -113,3 +114,51 @@ exports.post_comment = asyncHandler(async (req, res, next) => {
         }
     }
 });
+
+
+// controller to POST a like to a post in the DB
+exports.post_like = asyncHandler(async (req, res, next) => {
+    // check to  see if there is a postID and if the postID is valid
+    if (!req.params.postid || !isValidObjectId(req.params.postid)) {
+        // if not, send error
+        res.sendStatus(400);
+    } else {
+        // set the userID from the headers
+        const userId = req.headers['x-user-id'];
+        // check to see if there is a userID
+        if (!userId) {
+            // if not , send error
+            res.sendStatus(400).json({message: 'User ID is required'});
+        } else {
+            const post = await Post.findById(req.params.postid).exec()
+            // check if the post exists and is published
+            if (!post) {
+                // if not, send not found error
+                res.sendStatus(404);
+            } else {
+                // if there is a post, check to see if it is published or not
+                if (!post.published) {
+                    //if not, send forbidden error
+                    res.sendStatus(403);
+                } else {
+                    // post is published, check if the user has already liked the post
+                    const existingLike = await Like.findOne({ userId, postId: req.params.postid }).exec();
+                    if (existingLike) {
+                        // user has already liked the post, send error
+                        res.sendStatus(400).json({ message: 'User has already liked this post' })
+                    } else {
+                        // user has not yet liked this post
+                        // Increment the post's like count and save to DB
+                        post.likes += 1;
+                        await post.save();
+                        // Record the like in the Like model and save to DB
+                        const newLike = new Like({ userId, postId: req.params.postid });
+                        await newLike.save();
+                        // Respond with a success JSON result
+                        res.json({ message: 'Like recorded', result: 'done' });
+                    }
+                }
+            }
+        }
+    }
+})
