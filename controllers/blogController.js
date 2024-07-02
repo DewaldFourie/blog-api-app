@@ -167,7 +167,7 @@ exports.post_like = asyncHandler(async (req, res, next) => {
 // controller to check if a user has liked a post
 exports.check_like = asyncHandler(async (req, res, next) => {
     // check to  see if there is a postID and if the postID is valid
-    if (!req.params.postId || !isValidObjectId(req.params.postid)) {
+    if (!req.params.postId || !isValidObjectId(req.params.postId)) {
         // if not, send error
         return res.status(400).json({ message: 'invalid post ID' });
     } else {
