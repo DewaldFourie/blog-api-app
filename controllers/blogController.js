@@ -187,3 +187,38 @@ exports.check_like = asyncHandler(async (req, res, next) => {
         }
     }
 });
+
+
+// controller to DELETE a like from a post in the DB
+exports.delete_like = asyncHandler(async (req, res, next) => {
+    // check to  see if there is a postID and if the postID is valid
+    if (!req.params.postid || !isValidObjectId(req.params.postid)) {
+         // if not, send error
+        return res.status(400).json({ message: 'Invalid post ID' });
+    } else {
+        // set the userID from the headers
+        const userId = req.headers['x-user-id'];
+        // check to see if userID exists
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        } else {
+            const post = await Post.findById(req.params.postid).exec();
+            if (!post) {
+                return res.status(404).json({ message: 'Post not found' });
+            } else if (!post.published) {
+                return res.status(403).json({ message: 'Post not published' });
+            } else {
+                const existingLike = await Like.findOne({ userId, postId: req.params.postid }).exec();
+                // check to see if there is an existing like from the user, if not, return error, else delete the like
+                if (!existingLike) {
+                    return res.status(400).json({ message: 'User has not liked this post' });
+                } else {
+                    post.likes -= 1;
+                    await post.save();
+                    await Like.findByIdAndDelete(existingLike._id).exec();
+                    res.json({ message: 'Like removed', result: 'done' });
+                }
+            }
+        }
+    }
+});
