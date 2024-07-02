@@ -6,6 +6,7 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 
 
+
 // controller to GET the last N number of post list from the DB
 exports.get_last_post_list = asyncHandler(async (req, res, next) => {
     // check to see if the post N number is valid
@@ -162,3 +163,27 @@ exports.post_like = asyncHandler(async (req, res, next) => {
         }
     }
 })
+
+// controller to check if a user has liked a post
+exports.check_like = asyncHandler(async (req, res, next) => {
+    // check to  see if there is a postID and if the postID is valid
+    if (!req.params.postId || !isValidObjectId(req.params.postid)) {
+        // if not, send error
+        return res.status(400).json({ message: 'invalid post ID' });
+    } else {
+        // set the userID from the headers
+        const userId = req.headers['x-user-id'];
+        // check to see if userID exists
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        } else {
+            const existingLike = await Like.findOne({ userId, postId: req.params.postId}).exec();
+            // check to see if there is an existing like from the user, if yes, return true, else false
+            if (existingLike) {
+                return res.json({ liked: true });
+            } else {
+                return res.json({ liked: false });
+            }
+        }
+    }
+});
