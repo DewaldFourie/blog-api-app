@@ -17,7 +17,6 @@ router.get('/:postid/liked', blogController.check_like);
 router.post('/:postid/like', blogController.post_like);
 
 // Router to DELETE a like on a post
-// Router to DELETE a like on a post
 router.delete('/:postid/unlike', blogController.delete_like);
 
 
