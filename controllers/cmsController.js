@@ -138,6 +138,7 @@ exports.create_post = asyncHandler(async (req, res, next) => {
             author: req.authData.author._id, // Get the Author's ID from the token
             likes: 0,
             published: false,
+            imageURL: req.body.imageURL,
         });
         const createdPost = await newPost.save();
         res.json({ result: 'done', id: createdPost._id, url: createdPost.url });
@@ -161,6 +162,7 @@ exports.update_post = asyncHandler(async (req, res, next) => {
             // post exists and is valid, update the post accordingly
             post.title = req.body.title;
             post.text = req.body.text;
+            post.imageURL = req.body.imageURL;
             await Post.findByIdAndUpdate(req.params.postid, post).exec();
             res.json({ result: 'done', url: post.url });
         }
@@ -237,3 +239,4 @@ exports.create_author = asyncHandler(async (req, res, next) => {
         res.json({ result: 'done'});
     }
 });
+
