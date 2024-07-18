@@ -30,8 +30,8 @@ exports.login = asyncHandler(async (req, res, next) => {
                 res.sendStatus(401);
             } else {
                 // passwords is a match, send back the JWT token with httpOnly    NB= CAN ADJUST TIME LIMIT AS NEEDED
-                const expirationDate = dayjs().add(10, "minutes").toDate(); // if updated, the expires in value below must be updated
-                jwt.sign({ author }, process.env.SECRET, { expiresIn: "10m" }, (err, token) => {
+                const expirationDate = dayjs().add(30, "minutes").toDate(); // if updated, the expires in value below must be updated
+                jwt.sign({ author }, process.env.SECRET, { expiresIn: "30m" }, (err, token) => {
                     res.cookie("token", JSON.stringify({ token: token }), {
                         httpOnly: true,
                         expires: expirationDate,

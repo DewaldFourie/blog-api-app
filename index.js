@@ -24,7 +24,10 @@ async function main() {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5174',
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 
