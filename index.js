@@ -24,13 +24,39 @@ async function main() {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
-app.use(express.json());
 app.use(cookieParser());
 
+// allowed origins 
+const allowedOrigins = [
+    'http://localhost:5174/',
+    'http://localhost:5173/',
+]
 
-app.use('/cms', cmsRouter);
-app.use('/posts', blogRouter);
+// CORS options
+const corsOptions = (req, callback) => {
+    let corsOptions;
+    if(allowedOrigins.includes(req.header('Origin'))) {
+        corsOptions = {
+            origin: true,
+            credentials: true, // Enable credentials for CMS site
+        };
+    } else {
+        corsOptions = {
+            origin: false, // Disable CORS for other origins
+        };
+    }
+    callback(null, corsOptions);
+}
+
+// apply CORS middleware
+app.use(cors(corsOptions));
+
+app.use(express.json());
+
+
+
+app.use('/cms', cors({ origin: 'http://localhost:5174/', credentials: true }), cmsRouter);
+app.use('/posts', cors({ origin: 'http://localhost:5173/' }), blogRouter);
 
 app.listen(port, () => {
     console.log(`Server started on port: ${port}`);
