@@ -15,19 +15,19 @@ exports.login = asyncHandler(async (req, res, next) => {
     // check to see if the query args are present
     if (!req.body.username || !req.body.password) {
         // if not, send error Bad Request
-        res.sendStatus(400);
+        res.status(400).json({ message: "Please fill in ALL Fields." });
     } else {
         // check to see if an author with that username exists
         const author = await Author.findOne({ username: req.body.username }).exec();
         if (!author) {
             // if there is no author with that username, send not found error
-            res.sendStatus(404);
+            res.status(404).json({ message: "The Username is not Registered." });
         } else {
             // check if the passwords match using passwordUtils
             const match = validPassword(req.body.password, author.hash, author.salt);
             if (!match) {
                 // if the passwords don't match, send unauthorized error
-                res.sendStatus(401);
+                res.status(401).json({ message: "Password is Incorrect." });
             } else {
                 // passwords is a match, send back the JWT token with httpOnly    NB= CAN ADJUST TIME LIMIT AS NEEDED
                 const expirationDate = dayjs().add(30, "minutes").toDate(); // if updated, the expires in value below must be updated
@@ -36,6 +36,7 @@ exports.login = asyncHandler(async (req, res, next) => {
                         httpOnly: true,
                         expires: expirationDate,
                         sameSite: "none",
+                        secure: true,
                     });
                     res.json({ result: "logged in", token: expirationDate });
                 });
@@ -53,6 +54,8 @@ exports.logout = asyncHandler(async (req, res, next) => {
     res.cookie("token", JSON.stringify({ token: "none" }), {
         httpOnly: true,
         expires: expirationDate,
+        sameSite: "none",
+        secure: true,
     });
     // response message to confirm logout
     res.json({ result: "logged out", token: expirationDate });
