@@ -118,7 +118,7 @@ exports.publish_post = asyncHandler(async (req, res, next) => {
             // if not, send not found error
             res.sendStatus(404);
         } else {
-            // there is a post, update the post attribute published to true
+            // there is a post, update the post attribute published to true or false according to need
             post.published = req.publish;
             await Post.findByIdAndUpdate(post._id, post);
             res.json({ result: 'done', published: req.publish, url: post.url });
