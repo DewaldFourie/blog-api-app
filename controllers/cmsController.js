@@ -38,7 +38,7 @@ exports.login = asyncHandler(async (req, res, next) => {
                         sameSite: "none",
                         secure: true,
                     });
-                    res.json({ result: "logged in", token: expirationDate });
+                    res.json({ result: "logged in", token: expirationDate, authorId: author._id, username: author.username });
                 });
             }
         }
