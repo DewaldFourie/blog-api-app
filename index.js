@@ -28,7 +28,7 @@ app.use(cookieParser());
 
 // CORS options for CMS routes
 const cmsCorsOptions = {
-    origin: 'http://localhost:5174', // replace with your CMS frontend domain
+    origin: 'blog-cms-app.vercel.app', // replace with your CMS frontend domain
     credentials: true,
 };
 
