@@ -186,8 +186,10 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
             //if the post does not exists in the DB, send not found error
             res.sendStatus(404);
         } else {
-            // posts exists and is valid, delete post accordingly
-            await post.remove(); // call remove to trigger the pre hook for deleting all the comments as well
+            // posts exists and is valid, delete associated comments first
+            await post.model('Comment').deleteMany({ post: post._id }).exec();
+            // then delete the post
+            await Post.deleteOne({ _id: req.params.postid }).exec();
             res.json({ result: 'done' });
         }
     }
