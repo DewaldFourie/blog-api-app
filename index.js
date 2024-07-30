@@ -28,7 +28,7 @@ app.use(cookieParser());
 
 // CORS options for CMS routes
 const cmsCorsOptions = {
-    origin: 'blog-cms-app.vercel.app', // replace with your CMS frontend domain
+    origin: 'https://blog-cms-4bat6n6ee-dewaldfouries-projects.vercel.app', // replace with your CMS frontend domain
     credentials: true,
 };
 
@@ -44,3 +44,4 @@ app.use('/posts', blogRouter);
 app.listen(port, () => {
     console.log(`Server started on port: ${port}`);
 });
+
